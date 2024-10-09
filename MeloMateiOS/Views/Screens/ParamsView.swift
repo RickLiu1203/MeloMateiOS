@@ -60,13 +60,13 @@ struct ParamsView: View {
                     .frame(maxWidth: .infinity)
                     .background(Color.green)
                     .cornerRadius(10)
-                    .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
+                    .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 5)
             }
             .padding(.vertical, 8)
             
         }
         .padding(.horizontal, 32)
-        .background(Color(.systemGray6).edgesIgnoringSafeArea(.all))
+        .background(Color(hex: "#f1f5f9").edgesIgnoringSafeArea(.all))
         .ignoresSafeArea(.keyboard)
         .onTapGesture {
             UIApplication.shared.endEditing() // Dismiss keyboard on tap anywhere
