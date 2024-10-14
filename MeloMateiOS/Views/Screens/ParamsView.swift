@@ -2,6 +2,9 @@ import SwiftUI
 
 struct ParamsView: View {
     @State private var searchText: String = ""
+    @State private var speed = 50.0
+    @State private var isEditing = false
+    @State private var selectedAction = "None"
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Binding var rootIsActive : Bool
     
@@ -33,22 +36,67 @@ struct ParamsView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(.gray)
+            
+            Picker("Actions", selection: $selectedAction) {
+                Text("Popularity").tag("Duplicate")
+                    .foregroundColor(.green)
+                    .fontWeight(.semibold)
+                Text("Energy").tag("Rename")
+                    .foregroundColor(.green)
+                    .fontWeight(.semibold)
+                Text("Danceability").tag("Delete")
+                    .foregroundColor(.green)
+                    .fontWeight(.semibold)
+            }
+                .frame(maxWidth: .infinity, maxHeight: 100)
+                .pickerStyle(.wheel)
+                .background(Color.white) // Set background to white
+                .cornerRadius(10)
+            
+            Text("Adjust the Slider")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .foregroundColor(.gray)
+
              
             // Search Results Placeholder
             VStack {
+                Slider(
+                        value: $speed,
+                        in: 0...5,
+                        step: 1
+                    ) {
+                        Text("Speed")
+                    } minimumValueLabel: {
+                        Text("0")
+                    } maximumValueLabel: {
+                        Text("5")
+                    } onEditingChanged: { editing in
+                        isEditing = editing
+                    }
+                    .accentColor(.green)
+                    .padding(.vertical, 16)
+                    .padding(.horizontal, 20)
+                    .cornerRadius(8)
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color(.white))
+            .cornerRadius(10)
+            .padding(.top, 4)
+            
+            Spacer()
+            
+            VStack {
                 Spacer()
-                Text("Set your Parameter")
+                Text("Disclaimer text")
                     .foregroundColor(.gray)
                     .fontWeight(.semibold)
                 Spacer()
             }
-            .frame(maxWidth: .infinity, maxHeight: 400)
+            .frame(maxWidth: .infinity, maxHeight: 100)
             .background(Color(.white))
             .cornerRadius(10)
             .padding(.top, 4)
-            .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 5)
-            
-            Spacer()
             
             // NavigationLink to Step 3
             NavigationLink(destination: ResultsView(shouldPopToRootView: self.$rootIsActive)) {
@@ -60,7 +108,6 @@ struct ParamsView: View {
                     .frame(maxWidth: .infinity)
                     .background(Color.green)
                     .cornerRadius(10)
-                    .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 5)
             }
             .padding(.vertical, 8)
             

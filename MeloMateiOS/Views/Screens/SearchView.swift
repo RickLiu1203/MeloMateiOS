@@ -35,8 +35,8 @@ extension Color {
 
 
 struct SearchView: View {
-    @State private var searchText: String = ""
-    @State var isActive : Bool = false
+    @StateObject var viewModel = SearchViewModel()  // Attach the ViewModel to the view
+    @State var isActive: Bool = false
     
     struct SuperTextField: View {
         
@@ -55,7 +55,7 @@ struct SearchView: View {
     }
     
     var body: some View {
-        NavigationView{
+        NavigationView {
             VStack(alignment: .leading, spacing: 8) {
                 // Step 1 Title
                 Text("Step 1")
@@ -73,31 +73,83 @@ struct SearchView: View {
                     .foregroundColor(.gray)
                 
                 // Search Bar
-                SuperTextField(placeholder: Text("Search for a Track...").foregroundColor(.gray).fontWeight(.semibold), text: $searchText)
-                    .padding(16)
-                    .padding(.horizontal, 6)
+                SuperTextField(
+                    placeholder: Text("Search for a Track...").foregroundColor(.gray).fontWeight(.semibold),
+                    text: $viewModel.searchText  // Bind searchText to ViewModel
+                )
+                .padding(16)
+                .padding(.horizontal, 6)
+                .background(Color(.white))
+                .cornerRadius(10)
+                .foregroundColor(Color.gray)
+                .fontWeight(.semibold)
+                
+                // Search Button to trigger the API call
+                Button(action: {
+                    viewModel.searchForTracks()  // Call the ViewModel's search function
+                }) {
+                    Text("Search")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }
+                .padding(.bottom, 8)
+                
+                // Search Results
+                if viewModel.searchResults.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("Search Results Will Show Up Here")
+                            .foregroundColor(.gray)
+                            .fontWeight(.semibold)
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity)
                     .background(Color(.white))
                     .cornerRadius(10)
-                    .foregroundColor(Color.gray)
-                    .fontWeight(.semibold)
+                    .padding(.top, 4)
+                } else {
+                    // List of Search Results
+                    List(viewModel.searchResults) { track in
+                        VStack(alignment: .leading) {
+                            Text(track.name)
+                                .font(.headline)
+                            Text(track.artist)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 200)
+                    .background(Color(.white))
+                    .cornerRadius(10)
+                }
                 
-                // Search Results Placeholder
+                Text("Your Selections")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.gray)
+                    .padding(.top, 8)
+                
                 VStack {
                     Spacer()
-                    Text("Search Results Will Show Up Here")
+                    Text("Your Selections Will Show Up Here")
                         .foregroundColor(.gray)
                         .fontWeight(.semibold)
                     Spacer()
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: 150)
                 .background(Color(.white))
                 .cornerRadius(10)
                 .padding(.top, 4)
-                .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y:5)
                 
+                // Navigation to Step 2
                 NavigationLink(
                     destination: ParamsView(rootIsActive: self.$isActive),
-                    isActive: self.$isActive){
+                    isActive: self.$isActive
+                ) {
                     Text("Go to Step 2")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -106,11 +158,11 @@ struct SearchView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color.green)
                         .cornerRadius(10)
-                        .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 5)
                 }
                 .padding(.vertical, 8)
                 
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.horizontal, 32)
             .background(Color(hex: "#f1f5f9").edgesIgnoringSafeArea(.all))
             .ignoresSafeArea(.keyboard)
@@ -118,12 +170,5 @@ struct SearchView: View {
                 UIApplication.shared.endEditing() // Dismiss keyboard on tap anywhere
             }
         }
-    }
-}
-
-
-struct SearchView_Previews: PreviewProvider {
-    static var previews: some View {
-        SearchView()
     }
 }
